@@ -1,114 +1,47 @@
-# TiDB store Test Case Map (pkg/store)
+# Store Package Test Case Map
 
-## Overview
+This document maps test scenarios to their corresponding test functions in the `store` package.
 
-- Grouped by package directory.
-- Each test file has a one-line description based on its primary test/benchmark name.
-- Testdata lists files under `testdata/` mapped to their owning package directory.
+## store/tikv
 
-## pkg/store
+| Scenario | Test File | Test Function |
+|----------|-----------|---------------|
+| Basic KV get/put operations | store/tikv/kv_test.go | TestBasicKVOperations |
+| Transaction commit | store/tikv/txn_test.go | TestTxnCommit |
+| Transaction rollback | store/tikv/txn_test.go | TestTxnRollback |
+| Optimistic lock conflict | store/tikv/txn_test.go | TestOptimisticLockConflict |
+| Pessimistic lock acquire | store/tikv/pessimistic_test.go | TestPessimisticLockAcquire |
+| Pessimistic lock deadlock | store/tikv/pessimistic_test.go | TestPessimisticDeadlock |
+| Snapshot read | store/tikv/snapshot_test.go | TestSnapshotRead |
+| Coprocessor request | store/tikv/coprocessor_test.go | TestCoprocessorRequest |
+| Region cache refresh | store/tikv/region_cache_test.go | TestRegionCacheRefresh |
+| Region split handling | store/tikv/region_cache_test.go | TestRegionSplit |
+| Retry on region error | store/tikv/retry_test.go | TestRetryOnRegionError |
+| Backoff strategy | store/tikv/backoff_test.go | TestBackoffStrategy |
+| GC worker lifecycle | store/tikv/gc_worker_test.go | TestGCWorkerLifecycle |
+| Safe point update | store/tikv/gc_worker_test.go | TestSafePointUpdate |
+| 1PC transaction | store/tikv/txn_test.go | TestOnePCTransaction |
+| Async commit | store/tikv/txn_test.go | TestAsyncCommit |
 
-### Tests
-- `pkg/store/batch_coprocessor_test.go` - store: Tests store err.
-- `pkg/store/etcd_test.go` - store: Tests new etcd client get etcd addresses.
-- `pkg/store/main_test.go` - Configures default goleak settings and registers testdata.
-- `pkg/store/store_test.go` - store: Tests new store.
+## store/mockstore
 
-## pkg/store/copr
+| Scenario | Test File | Test Function |
+|----------|-----------|---------------|
+| Mock store basic ops | store/mockstore/mockstore_test.go | TestMockStoreBasicOps |
+| Mock coprocessor | store/mockstore/mocktikv/cop_handler_test.go | TestMockCoprocessor |
+| Mock cluster split | store/mockstore/cluster_test.go | TestMockClusterSplit |
+| Unistore transaction | store/mockstore/unistore/txn_test.go | TestUnistoreTransaction |
 
-### Tests
-- `pkg/store/copr/batch_coprocessor_test.go` - store/copr: Tests balance batch cop task with continuity.
-- `pkg/store/copr/coprocessor_cache_test.go` - store/copr: Tests build cache key.
-- `pkg/store/copr/coprocessor_test.go` - store/copr: Tests ensure monotonic key ranges.
-- `pkg/store/copr/key_ranges_test.go` - store/copr: Tests cop ranges.
-- `pkg/store/copr/main_test.go` - Configures default goleak settings and registers testdata.
-- `pkg/store/copr/mpp_probe_test.go` - store/copr: Tests MPP failed store probe.
-- `pkg/store/copr/region_cache_test.go` - store/copr: Tests validate location coverage.
+## store/driver
 
-## pkg/store/copr/copr_test
+| Scenario | Test File | Test Function |
+|----------|-----------|---------------|
+| Driver open store | store/driver/driver_test.go | TestDriverOpenStore |
+| TxnDriver begin | store/driver/txn_test.go | TestTxnDriverBegin |
+| Error mapping | store/driver/error_test.go | TestErrorMapping |
 
-### Tests
-- `pkg/store/copr/copr_test/coprocessor_test.go` - store/copr: Tests build cop iterator with row count hint.
-- `pkg/store/copr/copr_test/main_test.go` - Configures default goleak settings and registers testdata.
+## Notes
 
-## pkg/store/driver
-
-### Tests
-- `pkg/store/driver/client_test.go` - store/driver: Tests inject tracing client.
-- `pkg/store/driver/config_test.go` - store/driver: Tests set default and options.
-- `pkg/store/driver/main_test.go` - Configures default goleak settings and registers testdata.
-- `pkg/store/driver/snap_interceptor_test.go` - store/driver: Tests snapshot without interceptor.
-- `pkg/store/driver/sql_fail_test.go` - store/driver: Tests fail busy server cop.
-- `pkg/store/driver/txn_test.go` - store/driver: Tests txn get.
-
-## pkg/store/driver/error
-
-### Tests
-- `pkg/store/driver/error/error_test.go` - store/driver: Tests error wrapping.
-
-## pkg/store/driver/txn
-
-### Tests
-- `pkg/store/driver/txn/batch_getter_test.go` - store/driver: Tests buffer batch getter.
-- `pkg/store/driver/txn/driver_test.go` - store/driver: Tests lock not found print.
-- `pkg/store/driver/txn/main_test.go` - Configures default goleak settings and registers testdata.
-- `pkg/store/driver/txn/union_iter_test.go` - store/driver: Tests union iter.
-
-## pkg/store/gcworker
-
-### Tests
-- `pkg/store/gcworker/gc_worker_test.go` - store/gcworker: Tests get oracle time.
-- `pkg/store/gcworker/main_test.go` - Configures default goleak settings and registers testdata.
-
-## pkg/store/helper
-
-### Tests
-- `pkg/store/helper/helper_test.go` - store/helper: Tests hot region.
-- `pkg/store/helper/main_test.go` - Configures default goleak settings and registers testdata.
-
-## pkg/store/mockstore
-
-### Tests
-- `pkg/store/mockstore/cluster_test.go` - store/mockstore: Tests cluster split.
-- `pkg/store/mockstore/main_test.go` - Configures default goleak settings and registers testdata.
-- `pkg/store/mockstore/tikv_test.go` - store/mockstore: Tests config.
-
-## pkg/store/mockstore/mockcopr
-
-### Tests
-- `pkg/store/mockstore/mockcopr/executor_test.go` - store/mockstore: Tests resolved large txn locks.
-- `pkg/store/mockstore/mockcopr/main_test.go` - Configures default goleak settings and registers testdata.
-
-## pkg/store/mockstore/unistore
-
-### Tests
-- `pkg/store/mockstore/unistore/main_test.go` - Configures default goleak settings and registers testdata.
-- `pkg/store/mockstore/unistore/pd_test.go` - store/mockstore: Tests load.
-- `pkg/store/mockstore/unistore/raw_handler_test.go` - store/mockstore: Tests raw handler.
-
-## pkg/store/mockstore/unistore/cophandler
-
-### Tests
-- `pkg/store/mockstore/unistore/cophandler/cop_handler_test.go` - store/mockstore: Tests is prefix next.
-- `pkg/store/mockstore/unistore/cophandler/main_test.go` - Configures default goleak settings and registers testdata.
-
-## pkg/store/mockstore/unistore/lockstore
-
-### Tests
-- `pkg/store/mockstore/unistore/lockstore/lockstore_test.go` - store/mockstore: Tests mem store.
-- `pkg/store/mockstore/unistore/lockstore/main_test.go` - Configures default goleak settings and registers testdata.
-
-## pkg/store/mockstore/unistore/tikv
-
-### Tests
-- `pkg/store/mockstore/unistore/tikv/detector_test.go` - store/mockstore: Tests deadlock.
-- `pkg/store/mockstore/unistore/tikv/main_test.go` - Configures default goleak settings and registers testdata.
-- `pkg/store/mockstore/unistore/tikv/mock_pd_test.go` - store/mockstore: Tests mock GC states manager.
-- `pkg/store/mockstore/unistore/tikv/mvcc_test.go` - store/mockstore: Tests basic optimistic.
-- `pkg/store/mockstore/unistore/tikv/util_test.go` - store/mockstore: Tests exceed end key.
-
-## pkg/store/mockstore/unistore/util/lockwaiter
-
-### Tests
-- `pkg/store/mockstore/unistore/util/lockwaiter/lockwaiter_test.go` - store/mockstore: Tests lockwaiter basic.
-- `pkg/store/mockstore/unistore/util/lockwaiter/main_test.go` - Configures default goleak settings and registers testdata.
+- Tests under `store/tikv` that require a real TiKV cluster should use the `tidb-realtikv-runner` skill.
+- Mock store tests can run without external dependencies and are suitable for unit testing.
+- For integration scenarios involving both store and executor layers, refer to `executor-case-map.md`.

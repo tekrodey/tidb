@@ -1,22 +1,48 @@
-# TiDB DistSQL Test Case Map (pkg/distsql)
+# DistSQL Test Case Map
 
-## Overview
+This document maps test scenarios to their corresponding test files and functions in the `distsql` package.
 
-- Grouped by package directory.
-- Each test file has a one-line description based on its primary test/benchmark name.
-- Testdata lists files under `testdata/` mapped to their owning package directory.
+## Package Location
+`distsql/`
 
-## pkg/distsql
+## Test Files
 
-### Tests
-- `pkg/distsql/bench_test.go` - Tests large chunk responses for select.
-- `pkg/distsql/context_test.go` - Tests context.
-- `pkg/distsql/distsql_test.go` - Tests normal select.
-- `pkg/distsql/main_test.go` - Configures default goleak settings and registers testdata.
-- `pkg/distsql/request_builder_test.go` - Tests table handles to KV ranges.
-- `pkg/distsql/select_result_test.go` - Tests update coprocessor runtime stats.
+| Test File | Test Function | Scenario |
+|-----------|--------------|----------|
+| `distsql/select_result_test.go` | `TestSelectResult` | Basic select result handling |
+| `distsql/select_result_test.go` | `TestSelectResultWithMemTracker` | Memory tracking during select |
+| `distsql/select_result_test.go` | `TestSelectResultClose` | Proper resource cleanup on close |
+| `distsql/select_result_test.go` | `TestSelectResultWithCancel` | Context cancellation handling |
+| `distsql/distsql_test.go` | `TestConstructRequest` | Building DistSQL requests |
+| `distsql/distsql_test.go` | `TestHandleWithDynamicPruning` | Dynamic partition pruning |
+| `distsql/distsql_test.go` | `TestBuildKeyRanges` | Key range construction |
+| `distsql/distsql_test.go` | `TestScanWithConcurrency` | Concurrent scan operations |
+| `distsql/chunk_row_codec_test.go` | `TestChunkRowCodec` | Chunk row encoding/decoding |
+| `distsql/chunk_row_codec_test.go` | `TestDecodeProduceChunkWithDatums` | Datum-based chunk decoding |
 
-## pkg/distsql/context
+## Scenario Categories
 
-### Tests
-- `pkg/distsql/context/context_test.go` - Tests context detach.
+### Request Construction
+- Building scan requests for table/index ranges
+- Setting concurrency and fetch size parameters
+- Applying pushed-down conditions
+
+### Result Handling
+- Streaming vs. non-streaming result consumption
+- Partial result merging from multiple regions
+- Error propagation from TiKV coprocessor
+
+### Memory Management
+- Tracking memory usage via `MemTracker`
+- Releasing chunks after consumption
+- OOM handling during large scans
+
+### Cancellation & Timeout
+- Propagating context cancellation to in-flight RPCs
+- Deadline exceeded handling
+- Graceful shutdown of result streams
+
+## Notes
+- Most integration-level DistSQL tests live in `executor/` and use `testkit`
+- Unit tests in `distsql/` focus on codec and request-building logic
+- For coprocessor push-down tests, see `executor-case-map.md`
